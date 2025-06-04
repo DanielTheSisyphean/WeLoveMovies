@@ -18,9 +18,12 @@ async function list(is_showing) {
 }
 
 async function read(movie_id) {
-  // TODO: Add your code here
-  
+  return db("movies as M")
+    .select("M.*")
+    .where({ movie_id })
+    .first(); 
 }
+
 
 module.exports = {
   list,
