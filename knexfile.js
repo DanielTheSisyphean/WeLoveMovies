@@ -1,15 +1,25 @@
 const path = require("path");
-
 require("dotenv").config();
 
 const {
-  DATABASE_URL = "postgresql://postgres@localhost/postgres",
+  NODE_ENV = "development",
+  DEVELOPMENT_DATABASE_URL,
+  PRODUCTION_DATABASE_URL,
 } = process.env;
+
+const isProduction = NODE_ENV === "production";
+
+const connection = isProduction
+  ? {
+      connectionString: PRODUCTION_DATABASE_URL,
+      ssl: { rejectUnauthorized: false }, 
+    }
+  : DEVELOPMENT_DATABASE_URL;
 
 module.exports = {
   development: {
     client: "postgresql",
-    connection: DATABASE_URL,
+    connection: DEVELOPMENT_DATABASE_URL, 
     pool: { min: 0, max: 5 },
     migrations: {
       directory: path.join(__dirname, "src", "db", "migrations"),
@@ -18,13 +28,13 @@ module.exports = {
       directory: path.join(__dirname, "src", "db", "seeds"),
     },
     ssl: {
-      rejectUnauthorized: false // This will allow connections without requiring SSL certificates to be valid.
-    }
+      rejectUnauthorized: false, 
+    },
   },
 
   production: {
     client: "postgresql",
-    connection: DATABASE_URL,
+    connection: PRODUCTION_DATABASE_URL,
     pool: { min: 0, max: 5 },
     migrations: {
       directory: path.join(__dirname, "src", "db", "migrations"),
@@ -33,14 +43,14 @@ module.exports = {
       directory: path.join(__dirname, "src", "db", "seeds"),
     },
     ssl: {
-      rejectUnauthorized: false // This will allow connections without requiring SSL certificates to be valid.
-    }
+      rejectUnauthorized: false, 
+    },
   },
 
   test: {
     client: "sqlite3",
     connection: {
-      filename: ":memory:",
+      filename: ":memory:", 
     },
     migrations: {
       directory: path.join(__dirname, "src", "db", "migrations"),
